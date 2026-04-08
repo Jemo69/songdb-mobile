@@ -12,15 +12,31 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   List<dynamic> _songs = [];
   bool _isLoading = false;
   String? _errorMessage;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _fetchSongs();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      logger.i('App resumed, fetching songs...');
+      _fetchSongs();
+    }
   }
 
   Future<void> _fetchSongs() async {
@@ -82,41 +98,100 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isWide = MediaQuery.of(context).size.width >= 600;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('SONGDB'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, size: 28),
-            onPressed: () => Navigator.pushNamed(context, '/settings'),
-          ),
+          if (!isWide)
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () => Navigator.pushNamed(context, '/settings'),
+            ),
         ],
       ),
-      body: Column(
+      body: Row(
         children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: _buildSongList(),
+          if (isWide)
+            NavigationRail(
+              extended: MediaQuery.of(context).size.width >= 900,
+              selectedIndex: _selectedIndex,
+              onDestinationSelected: (index) async {
+                if (index == 1) {
+                  await Navigator.pushNamed(context, '/settings');
+                  setState(() {
+                    _selectedIndex = 0;
+                  });
+                } else {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                }
+              },
+              labelType: NavigationRailLabelType.none,
+              destinations: const [
+                NavigationRailDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home),
+                  label: Text('HOME'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.settings_outlined),
+                  selectedIcon: Icon(Icons.settings),
+                  label: Text('SETTINGS'),
+                ),
+              ],
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+          Expanded(
+            child: Column(
               children: [
-                FloatingActionButton.extended(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/add_song');
-                  },
-                  tooltip: 'ADD SONG',
-                  label: const Text('ADD SONG'),
-                  icon: const Icon(Icons.add),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: _buildSongList(),
+                  ),
                 ),
               ],
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: isWide
+          ? null
+          : BottomNavigationBar(
+              currentIndex: _selectedIndex,
+              onTap: (index) async {
+                if (index == 1) {
+                  await Navigator.pushNamed(context, '/settings');
+                  setState(() {
+                    _selectedIndex = 0;
+                  });
+                } else {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                }
+              },
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined),
+                  activeIcon: Icon(Icons.home),
+                  label: 'HOME',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings_outlined),
+                  activeIcon: Icon(Icons.settings),
+                  label: 'SETTINGS',
+                ),
+              ],
+            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/add_song');
+        },
+        tooltip: 'ADD SONG',
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -160,7 +235,10 @@ class _MyHomePageState extends State<MyHomePage> {
               .toUpperCase();
 
           return Card(
+            elevation: 0,
+            color: Theme.of(context).colorScheme.secondary,
             child: InkWell(
+              borderRadius: BorderRadius.circular(8.0),
               onTap: () {
                 logger.d('Opening song: $title');
                 final songData = Map<String, dynamic>.from(song);
@@ -175,15 +253,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    const Icon(Icons.music_note, size: 32),
+                    Icon(
+                      Icons.music_note,
+                      size: 32,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Text(
                         title,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    const Icon(Icons.arrow_forward_ios, size: 18),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 14,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                    ),
                   ],
                 ),
               ),
@@ -203,17 +291,24 @@ class _MyHomePageState extends State<MyHomePage> {
             .toUpperCase();
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12.0),
+          padding: const EdgeInsets.only(bottom: 8.0),
           child: ListTile(
-            leading: const Icon(Icons.music_note, size: 28),
+            tileColor: Theme.of(context).colorScheme.secondary,
+            leading: Icon(
+              Icons.music_note,
+              size: 24,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             title: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            trailing: const Icon(
+            trailing: Icon(
               Icons.arrow_forward_ios,
-              size: 18,
-              weight: 900,
+              size: 14,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
             ),
             onTap: () {
               logger.d('Opening song: $title');

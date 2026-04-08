@@ -49,11 +49,13 @@ class SettingsPage extends StatelessWidget {
             ThemeMode.dark,
           ),
           const SizedBox(height: 32),
-          const Divider(thickness: 2, color: Colors.black),
+          const Divider(thickness: 1),
           const SizedBox(height: 16),
-          const Text(
-            'SYSTEM VERSION: 1.0.0 (JEMO CORE)',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          Text(
+            'SYSTEM VERSION: 1.0.0 (MHID)',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -72,34 +74,27 @@ class SettingsPage extends StatelessWidget {
       title: Text(
         label,
         style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: isSelected
-              ? Theme.of(context).colorScheme.onPrimary
-              : Theme.of(context).colorScheme.onSurface,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
       leading: Icon(
         icon,
         color: isSelected
-            ? Theme.of(context).colorScheme.onPrimary
-            : Theme.of(context).colorScheme.onSurface,
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onSurface.withOpacity(0.64),
       ),
       tileColor: isSelected
-          ? Theme.of(context).colorScheme.primary
-          : Theme.of(context).colorScheme.surface,
+          ? Theme.of(context).colorScheme.secondary
+          : Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: isSelected
-              ? Theme.of(context).colorScheme.onPrimary
-              : Theme.of(context).colorScheme.onSurface,
-          width: 2.5,
-        ),
+        borderRadius: BorderRadius.circular(8),
       ),
       trailing: isSelected
           ? Icon(
               Icons.check_circle,
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.primary,
+              size: 20,
             )
           : null,
       onTap: () => onThemeChanged(mode),
