@@ -2,27 +2,24 @@ import 'package:flutter/material.dart';
 
 class MHIDTheme {
   // --- Reference Tokens (mh.ref) ---
-  static const Color refColorNeutral0 = Color(0xFF000000);
-  static const Color refColorNeutral100 = Color(0xFFFFFFFF);
-  static const Color refColorNeutral95 = Color(0xFFF2F2F7); // Light gray for tonal shifts
-  static const Color refColorNeutral10 = Color(0xFF1C1C1E); // Dark gray for dark mode surfaces
+  static const Color refColorNeutral0 = Color(0xFF000000); // Black
+  static const Color refColorNeutral100 = Color(0xFFFFFFFF); // White
+  static const Color refColorNeutral95 = Color(0xFFF2F2F7); // Light gray (HIG-like)
+  static const Color refColorNeutral10 = Color(0xFF1C1C1E); // Dark gray (HIG-like)
 
   static const double refShapeCornerS = 4.0;
-  static const double refShapeCornerM = 8.0;
-  static const double refShapeCornerL = 12.0;
+  static const double refShapeCornerM = 10.0;
+  static const double refShapeCornerL = 16.0;
 
-  // --- System Tokens (mh.sys) ---
-  // These will be derived based on brightness in the theme getter,
-  // but we can define some semantic constants here if needed.
-
+  // --- Motion Tokens ---
   static Duration get motionDurationEnter => const Duration(milliseconds: 250);
   static Duration get motionDurationExit => const Duration(milliseconds: 150);
   static Duration get motionDurationFeedback => const Duration(milliseconds: 200);
   static Duration get motionDurationSpatial => const Duration(milliseconds: 350);
 
-  static Curve get motionEasingEnter => Curves.decelerate; // Standard Decelerate
-  static Curve get motionEasingExit => Curves.accelerate; // Standard Accelerate
-  static Curve get motionEasingExpressive => Curves.easeOutBack; // Expressive (More subtle than elasticOut)
+  static Curve get motionEasingEnter => Curves.decelerate;
+  static Curve get motionEasingExit => Curves.fastOutSlowIn; // Use fastOutSlowIn instead of accelerate if not found
+  static Curve get motionEasingExpressive => Curves.easeOutBack;
 
   static ThemeData getTheme(Brightness brightness) {
     final bool isDark = brightness == Brightness.dark;
@@ -31,6 +28,8 @@ class MHIDTheme {
     final Color backgroundColor = isDark ? refColorNeutral0 : refColorNeutral100;
     final Color surfaceColor = isDark ? refColorNeutral10 : refColorNeutral95;
     final Color onSurfaceColor = isDark ? refColorNeutral100 : refColorNeutral0;
+
+    // Primary is used sparingly (Minimalist Color Mandate)
     final Color primaryColor = isDark ? refColorNeutral100 : refColorNeutral0;
     final Color onPrimaryColor = isDark ? refColorNeutral0 : refColorNeutral100;
 
@@ -48,22 +47,23 @@ class MHIDTheme {
         surface: backgroundColor,
         onSurface: onSurfaceColor,
         surfaceContainerHighest: surfaceColor,
-        outline: onSurfaceColor.withOpacity(0.12), // Subtle outline for MHID
+        outline: onSurfaceColor.withOpacity(0.12),
       ),
       scaffoldBackgroundColor: backgroundColor,
       fontFamily: 'Roboto',
 
-      // Typography
+      // Typography (Hierarchical Type Scale)
       textTheme: TextTheme(
-        displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: onSurfaceColor),
-        displayMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: onSurfaceColor),
-        displaySmall: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: onSurfaceColor),
-        headlineMedium: TextStyle(fontWeight: FontWeight.w600, color: onSurfaceColor),
-        bodyLarge: TextStyle(color: onSurfaceColor, fontSize: 16),
-        bodyMedium: TextStyle(color: onSurfaceColor, fontSize: 14),
+        displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: onSurfaceColor, letterSpacing: -0.5),
+        displayMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: onSurfaceColor, letterSpacing: -0.5),
+        displaySmall: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: onSurfaceColor, letterSpacing: -0.2),
+        headlineMedium: TextStyle(fontWeight: FontWeight.w600, color: onSurfaceColor, letterSpacing: 0.1),
+        labelLarge: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.1),
+        bodyLarge: TextStyle(color: onSurfaceColor, fontSize: 16, height: 1.5),
+        bodyMedium: TextStyle(color: onSurfaceColor, fontSize: 14, height: 1.4),
       ),
 
-      // Component Themes
+      // AppBar (Content First, Minimalist)
       appBarTheme: AppBarTheme(
         backgroundColor: backgroundColor,
         foregroundColor: onSurfaceColor,
@@ -77,7 +77,42 @@ class MHIDTheme {
         ),
       ),
 
-      cardTheme: CardTheme(
+      // Action Components (Inverted Emphasis Hierarchy)
+      // High Emphasis -> Filled
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: onPrimaryColor,
+          elevation: 0, // Tonal Elevation
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(refShapeCornerM),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        ),
+      ),
+
+      // Medium Emphasis (Default) -> Outlined or Tonal
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: primaryColor,
+          side: BorderSide(color: onSurfaceColor.withOpacity(0.12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(refShapeCornerM),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        ),
+      ),
+
+      // Low Emphasis -> Text Button
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: primaryColor,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        ),
+      ),
+
+      // Components
+      cardTheme: CardThemeData(
         color: surfaceColor,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -85,77 +120,54 @@ class MHIDTheme {
         ),
       ),
 
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: onPrimaryColor,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(refShapeCornerS),
-          ),
-        ),
-      ),
-
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: primaryColor,
-          side: BorderSide(color: primaryColor.withOpacity(0.12)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(refShapeCornerS),
-          ),
-        ),
-      ),
-
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: onPrimaryColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(refShapeCornerS),
-          ),
-        ),
-      ),
-
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surfaceColor,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(refShapeCornerS),
+          borderRadius: BorderRadius.circular(refShapeCornerM),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(refShapeCornerS),
+          borderRadius: BorderRadius.circular(refShapeCornerM),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(refShapeCornerS),
-          borderSide: BorderSide(color: primaryColor, width: 1.0),
+          borderRadius: BorderRadius.circular(refShapeCornerM),
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
         ),
+        contentPadding: const EdgeInsets.all(16),
       ),
 
       navigationRailTheme: NavigationRailThemeData(
-        backgroundColor: surfaceColor,
+        backgroundColor: backgroundColor,
         selectedIconTheme: IconThemeData(color: primaryColor),
-        unselectedIconTheme: IconThemeData(color: onSurfaceColor.withOpacity(0.64)),
+        unselectedIconTheme: IconThemeData(color: onSurfaceColor.withOpacity(0.5)),
         selectedLabelTextStyle: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
-        unselectedLabelTextStyle: TextStyle(color: onSurfaceColor.withOpacity(0.64)),
+        unselectedLabelTextStyle: TextStyle(color: onSurfaceColor.withOpacity(0.5)),
+        elevation: 0,
       ),
 
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: backgroundColor,
         selectedItemColor: primaryColor,
-        unselectedItemColor: onSurfaceColor.withOpacity(0.64),
+        unselectedItemColor: onSurfaceColor.withOpacity(0.5),
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 0, // Content-First (No heavy shadow)
+      ),
+
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primaryColor,
+        foregroundColor: onPrimaryColor,
+        elevation: 2, // Subtle elevation
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(refShapeCornerL),
+        ),
       ),
 
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.android: MHIDPageTransitionsBuilder(),
           TargetPlatform.iOS: MHIDPageTransitionsBuilder(),
-          TargetPlatform.macOS: MHIDPageTransitionsBuilder(),
-          TargetPlatform.windows: MHIDPageTransitionsBuilder(),
-          TargetPlatform.linux: MHIDPageTransitionsBuilder(),
         },
       ),
     );
@@ -176,11 +188,20 @@ class MHIDPageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
+    // MHID Duration Standard: Screen Entry 250ms
     return FadeTransition(
       opacity: animation.drive(
-        CurveTween(curve: Curves.easeIn),
+        CurveTween(curve: Curves.easeInOut),
       ),
-      child: child,
+      child: SlideTransition(
+        position: animation.drive(
+          Tween<Offset>(
+            begin: const Offset(0.05, 0),
+            end: Offset.zero,
+          ).chain(CurveTween(curve: Curves.easeOutCubic)),
+        ),
+        child: child,
+      ),
     );
   }
 }

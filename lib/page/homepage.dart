@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         actions: [
           if (!isWide)
             IconButton(
-              icon: const Icon(Icons.settings),
+              icon: const Icon(Icons.settings_outlined),
               onPressed: () => Navigator.pushNamed(context, '/settings'),
             ),
         ],
@@ -198,32 +198,34 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   Widget _buildSongList() {
     if (_isLoading) {
-      return const CircularProgressIndicator();
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_errorMessage != null) {
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(
-          _errorMessage!,
-          style: const TextStyle(color: Colors.red),
-          textAlign: TextAlign.center,
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            _errorMessage!,
+            style: const TextStyle(color: Colors.red),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
 
     if (_songs.isEmpty) {
-      return const Text("No songs found.");
+      return const Center(child: Text("No songs found."));
     }
 
-    final isTablet = MediaQuery.of(context).size.width >= 600;
+    final isWide = MediaQuery.of(context).size.width >= 600;
 
-    if (isTablet) {
+    if (isWide) {
       return GridView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 24),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          childAspectRatio: 2.5,
+          childAspectRatio: 2.8,
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
         ),
@@ -235,10 +237,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               .toUpperCase();
 
           return Card(
-            elevation: 0,
-            color: Theme.of(context).colorScheme.secondary,
             child: InkWell(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(10.0),
               onTap: () {
                 logger.d('Opening song: $title');
                 final songData = Map<String, dynamic>.from(song);
@@ -254,23 +254,20 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.music_note,
-                      size: 32,
-                      color: Theme.of(context).colorScheme.primary,
+                      Icons.music_note_outlined,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Text(
                         title,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
+                        style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                          fontSize: 14,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 14,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                     ),
                   ],
                 ),
@@ -283,7 +280,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     return ListView.builder(
       itemCount: _songs.length,
-      padding: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.symmetric(vertical: 24),
       itemBuilder: (context, index) {
         final song = _songs[index];
         final title = (song['title'] ?? song['name'] ?? 'UNKNOWN TITLE')
@@ -291,24 +288,22 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             .toUpperCase();
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
+          padding: const EdgeInsets.only(bottom: 12.0),
           child: ListTile(
             tileColor: Theme.of(context).colorScheme.secondary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             leading: Icon(
-              Icons.music_note,
+              Icons.music_note_outlined,
               size: 24,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
             ),
             title: Text(
               title,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                fontSize: 14,
               ),
-            ),
-            trailing: Icon(
-              Icons.arrow_forward_ios,
-              size: 14,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
             ),
             onTap: () {
               logger.d('Opening song: $title');

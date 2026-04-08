@@ -68,22 +68,23 @@ class _AddSongPageState extends State<AddSongPage> {
     return Scaffold(
       appBar: AppBar(title: const Text("ADD NEW SONG")),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Hierarchy: Content First
             const Text(
-              "SONG DETAILS",
+              "NEW SONG",
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
+                letterSpacing: 2.0,
+                color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             TextField(
               controller: titleController,
-              style: const TextStyle(fontWeight: FontWeight.bold),
               decoration: const InputDecoration(
                 labelText: "TITLE",
                 hintText: "ENTER SONG TITLE",
@@ -92,15 +93,15 @@ class _AddSongPageState extends State<AddSongPage> {
             const SizedBox(height: 24),
             TextField(
               controller: lyricsController,
-              maxLines: 8,
-              style: const TextStyle(height: 1.5),
+              maxLines: 10,
               decoration: const InputDecoration(
                 labelText: "LYRICS",
                 hintText: "ENTER SONG LYRICS",
                 alignLabelWithHint: true,
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 48),
+            // Inverted Emphasis Hierarchy: Filled for critical action
             FilledButton(
               onPressed: () {
                 if (titleController.text.isNotEmpty) {
@@ -110,6 +111,7 @@ class _AddSongPageState extends State<AddSongPage> {
               child: const Text("SAVE SONG"),
             ),
             const SizedBox(height: 16),
+            // Outlined for medium emphasis
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
               child: const Text("CANCEL"),
