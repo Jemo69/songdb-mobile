@@ -101,7 +101,7 @@ class _AddSongPageState extends State<AddSongPage> {
               ),
             ),
             const SizedBox(height: 32),
-            ElevatedButton(
+            FilledButton(
               onPressed: () {
                 if (titleController.text.isNotEmpty) {
                   addSong(titleController.text, lyricsController.text);

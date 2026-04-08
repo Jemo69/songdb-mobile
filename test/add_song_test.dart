@@ -5,16 +5,16 @@ import 'package:songdb_mobile/page/add_song.dart';
 void main() {
   testWidgets('AddSongPage has title field', (WidgetTester tester) async {
     await tester.pumpWidget(const MaterialApp(home: AddSongPage()));
-    expect(find.text('Song Title'), findsOneWidget);
+    expect(find.text('TITLE'), findsOneWidget);
   });
 
   testWidgets('AddSongPage has lyrics field', (WidgetTester tester) async {
     await tester.pumpWidget(const MaterialApp(home: AddSongPage()));
-    expect(find.text('Lyrics'), findsOneWidget);
+    expect(find.text('LYRICS'), findsOneWidget);
   });
 
   testWidgets('AddSongPage has save button', (WidgetTester tester) async {
     await tester.pumpWidget(const MaterialApp(home: AddSongPage()));
-    expect(find.text('Save Song'), findsOneWidget);
+    expect(find.text('SAVE SONG'), findsOneWidget);
   });
 }

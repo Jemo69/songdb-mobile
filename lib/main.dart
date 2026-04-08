@@ -3,7 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'page/add_song.dart';
 import 'page/homepage.dart';
 import 'page/settings.dart';
-import 'theme/jemo_core.dart';
+import 'theme/mhid_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,8 +25,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SongDB',
-      theme: JemoCoreTheme.lightTheme,
-      darkTheme: JemoCoreTheme.darkTheme,
+      theme: MHIDTheme.lightTheme,
+      darkTheme: MHIDTheme.darkTheme,
       themeMode: _themeMode,
       routes: {
         '/': (context) => const MyHomePage(),

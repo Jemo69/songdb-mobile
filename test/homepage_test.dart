@@ -5,7 +5,7 @@ import 'package:songdb_mobile/page/homepage.dart';
 void main() {
   testWidgets('Homepage displays title', (WidgetTester tester) async {
     await tester.pumpWidget(const MaterialApp(home: MyHomePage()));
-    expect(find.text('SongDB'), findsOneWidget);
+    expect(find.text('SONGDB'), findsOneWidget);
   });
 
   testWidgets('Homepage has add song button', (WidgetTester tester) async {

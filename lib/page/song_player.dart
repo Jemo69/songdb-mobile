@@ -18,24 +18,18 @@ class SongPlayerPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  width: 2.5,
-                ),
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 title.toString().isNotEmpty
                     ? title.toString().toUpperCase()
                     : 'UNKNOWN TITLE',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -52,22 +46,19 @@ class SongPlayerPage extends StatelessWidget {
               const SizedBox(height: 16),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    width: 2.5,
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
                 child: Text(
                   lyrics.toString(),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    height: 1.6,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        height: 1.6,
+                      ),
                 ),
               ),
             ] else
@@ -92,9 +83,9 @@ class SongPlayerPage extends StatelessWidget {
                 ),
               ),
             const SizedBox(height: 32),
-            ElevatedButton.icon(
+            OutlinedButton.icon(
               onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back, size: 18),
               label: const Text('CLOSE'),
             ),
           ],

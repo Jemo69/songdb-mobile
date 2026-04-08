@@ -6,7 +6,7 @@ void main() {
   testWidgets('SongPlayerPage displays title', (WidgetTester tester) async {
     final song = {'title': 'Amazing Grace', 'lyrics': 'How sweet the sound'};
     await tester.pumpWidget(MaterialApp(home: SongPlayerPage(song: song)));
-    expect(find.text('Amazing Grace'), findsOneWidget);
+    expect(find.text('AMAZING GRACE'), findsOneWidget);
   });
 
   testWidgets('SongPlayerPage displays lyrics', (WidgetTester tester) async {
@@ -20,6 +20,6 @@ void main() {
   ) async {
     final song = {'title': 'Test Song'};
     await tester.pumpWidget(MaterialApp(home: SongPlayerPage(song: song)));
-    expect(find.text('No lyrics available'), findsOneWidget);
+    expect(find.text('NO LYRICS AVAILABLE'), findsOneWidget);
   });
 }
