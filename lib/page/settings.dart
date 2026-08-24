@@ -1,108 +1,60 @@
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
-  final ThemeMode themeMode;
-  final ValueChanged<ThemeMode> onThemeChanged;
-
   const SettingsPage({
     super.key,
     required this.themeMode,
     required this.onThemeChanged,
   });
 
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode> onThemeChanged;
+
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('SETTINGS')),
+      appBar: AppBar(title: const Text('Settings')),
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: Text(
-              'THEME SELECTION',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2.0,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+            child: Text('Appearance', style: Theme.of(context).textTheme.labelMedium),
+          ),
+          SegmentedButton<ThemeMode>(
+            segments: const [
+              ButtonSegment(
+                value: ThemeMode.system,
+                icon: Icon(Icons.brightness_auto_outlined),
+                label: Text('System'),
               ),
+              ButtonSegment(
+                value: ThemeMode.light,
+                icon: Icon(Icons.light_mode_outlined),
+                label: Text('Light'),
+              ),
+              ButtonSegment(
+                value: ThemeMode.dark,
+                icon: Icon(Icons.dark_mode_outlined),
+                label: Text('Dark'),
+              ),
+            ],
+            selected: {themeMode},
+            onSelectionChanged: (selection) => onThemeChanged(selection.first),
+          ),
+          const SizedBox(height: 24),
+          Divider(color: scheme.outlineVariant),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'SongDB mobile · 1.1.0',
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-          ),
-          _buildThemeOption(
-            context,
-            'SYSTEM DEFAULT',
-            Icons.brightness_auto,
-            ThemeMode.system,
-          ),
-          const SizedBox(height: 12),
-          _buildThemeOption(
-            context,
-            'LIGHT MODE',
-            Icons.light_mode,
-            ThemeMode.light,
-          ),
-          const SizedBox(height: 12),
-          _buildThemeOption(
-            context,
-            'DARK MODE',
-            Icons.dark_mode,
-            ThemeMode.dark,
-          ),
-          const SizedBox(height: 32),
-          const Divider(thickness: 2, color: Colors.black),
-          const SizedBox(height: 16),
-          const Text(
-            'SYSTEM VERSION: 1.0.0 (JEMO CORE)',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildThemeOption(
-    BuildContext context,
-    String label,
-    IconData icon,
-    ThemeMode mode,
-  ) {
-    final isSelected = themeMode == mode;
-    return ListTile(
-      title: Text(
-        label,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: isSelected
-              ? Theme.of(context).colorScheme.onPrimary
-              : Theme.of(context).colorScheme.onSurface,
-        ),
-      ),
-      leading: Icon(
-        icon,
-        color: isSelected
-            ? Theme.of(context).colorScheme.onPrimary
-            : Theme.of(context).colorScheme.onSurface,
-      ),
-      tileColor: isSelected
-          ? Theme.of(context).colorScheme.primary
-          : Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: isSelected
-              ? Theme.of(context).colorScheme.onPrimary
-              : Theme.of(context).colorScheme.onSurface,
-          width: 2.5,
-        ),
-      ),
-      trailing: isSelected
-          ? Icon(
-              Icons.check_circle,
-              color: Theme.of(context).colorScheme.onPrimary,
-            )
-          : null,
-      onTap: () => onThemeChanged(mode),
     );
   }
 }

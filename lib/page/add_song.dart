@@ -1,120 +1,113 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../logger.dart';
+
+import '../api/songdb.dart';
+import '../models/song.dart';
 
 class AddSongPage extends StatefulWidget {
-  const AddSongPage({super.key});
+  const AddSongPage({super.key, required this.api, this.onSaved});
+
+  final SongDbApi api;
+  final ValueChanged<Song>? onSaved;
 
   @override
   State<AddSongPage> createState() => _AddSongPageState();
 }
 
 class _AddSongPageState extends State<AddSongPage> {
-  final titleController = TextEditingController();
-  final lyricsController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _lyricsController = TextEditingController();
+  bool _saving = false;
 
   @override
   void dispose() {
-    titleController.dispose();
-    lyricsController.dispose();
+    _titleController.dispose();
+    _lyricsController.dispose();
     super.dispose();
   }
 
-  void addSong(String title, String lyrics) async {
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _saving = true);
     try {
-      final String baseUrl =
-          dotenv.env['BASE_URL'] ?? 'https://songdb-swart.vercel.app';
-      final String apiKey = dotenv.env['API_KEY'] ?? '';
-
-      final url = '$baseUrl/api/songs';
-      logger.i('Adding song: $title');
-
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          "Content-Type": "application/json",
-          if (apiKey.isNotEmpty) "Authorization": "Bearer $apiKey",
-        },
-        body: jsonEncode({"title": title, "lyrics": lyrics}),
+      final song = await widget.api.createSong(
+        title: _titleController.text.trim(),
+        lyrics: _lyricsController.text.trim(),
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        logger.i('Song added successfully');
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Song added successfully!")),
-        );
-        Navigator.pop(context);
-      } else {
-        logger.e('Failed to add song: ${response.statusCode}');
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to add song: ${response.body}")),
-        );
-      }
-    } catch (e) {
-      logger.e('Error adding song', error: e);
+      widget.onSaved?.call(song);
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('"${song.title}" saved to SongDB')),
+      );
+      Navigator.of(context).pop();
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+      setState(() => _saving = false);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not reach SongDB. Try again.')),
+      );
+      setState(() => _saving = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("ADD NEW SONG")),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              "SONG DETAILS",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
+      appBar: AppBar(title: const Text('Add song')),
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+            children: [
+              TextFormField(
+                controller: _titleController,
+                textCapitalization: TextCapitalization.sentences,
+                style: Theme.of(context).textTheme.titleMedium,
+                decoration: const InputDecoration(
+                  labelText: 'Title',
+                  hintText: 'e.g. Amazing Grace - John Newton',
+                ),
+                validator: (value) =>
+                    (value == null || value.trim().isEmpty) ? 'Give the song a title' : null,
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: titleController,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-              decoration: const InputDecoration(
-                labelText: "TITLE",
-                hintText: "ENTER SONG TITLE",
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _lyricsController,
+                maxLines: 12,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(
+                  labelText: 'Lyrics',
+                  alignLabelWithHint: true,
+                  hintText: 'Verse 1\n…',
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: lyricsController,
-              maxLines: 8,
-              style: const TextStyle(height: 1.5),
-              decoration: const InputDecoration(
-                labelText: "LYRICS",
-                hintText: "ENTER SONG LYRICS",
-                alignLabelWithHint: true,
+              const SizedBox(height: 24),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                ),
+                onPressed: _saving ? null : _save,
+                child: _saving
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2.4),
+                      )
+                    : const Text('Save song'),
               ),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {
-                if (titleController.text.isNotEmpty) {
-                  addSong(titleController.text, lyricsController.text);
-                }
-              },
-              child: const Text("SAVE SONG"),
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("CANCEL"),
-            ),
-          ],
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: _saving ? null : () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
         ),
       ),
     );

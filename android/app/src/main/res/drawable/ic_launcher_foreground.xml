@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- mh.sys: open-book mark on primaryContainer. 108dp canvas, mark inside 66dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M54,41 C49,35.5 39.5,33.5 31,36 L31,69 C39.5,66.5 49,68.5 54,74"
+        android:strokeColor="#0B423B"
+        android:strokeWidth="5.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"/>
+    <path
+        android:pathData="M54,41 C59,35.5 68.5,33.5 77,36 L77,69 C68.5,66.5 59,68.5 54,74"
+        android:strokeColor="#0B423B"
+        android:strokeWidth="5.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"/>
+    <path
+        android:pathData="M37.5,45.5 C41.5,44.6 46,45.3 49,47"
+        android:strokeColor="#0B423B"
+        android:strokeWidth="5.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"/>
+    <path
+        android:pathData="M70.5,45.5 C66.5,44.6 62,45.3 59,47"
+        android:strokeColor="#0B423B"
+        android:strokeWidth="5.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"/>
+    <path
+        android:pathData="M37.5,53.5 C41.5,52.6 46,53.3 49,55"
+        android:strokeColor="#0B423B"
+        android:strokeWidth="5.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"/>
+    <path
+        android:pathData="M70.5,53.5 C66.5,52.6 62,53.3 59,55"
+        android:strokeColor="#0B423B"
+        android:strokeWidth="5.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"/>
+</vector>
