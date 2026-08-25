@@ -24,6 +24,9 @@ jobs:
 
       - run: flutter pub get
 
+      - name: Create placeholder .env
+        run: cp .env.example .env
+
       - name: Analyze
         run: flutter analyze
         continue-on-error: true
