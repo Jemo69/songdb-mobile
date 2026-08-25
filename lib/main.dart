@@ -14,10 +14,19 @@ Future<void> main() async {
   runApp(SongDbApp(api: api));
 }
 
-class SongDbApp extends StatelessWidget {
+class SongDbApp extends StatefulWidget {
   const SongDbApp({super.key, required this.api});
 
   final SongDbApi api;
+
+  @override
+  State<SongDbApp> createState() => _SongDbAppState();
+}
+
+class _SongDbAppState extends State<SongDbApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  void _setThemeMode(ThemeMode mode) => setState(() => _themeMode = mode);
 
   @override
   Widget build(BuildContext context) {
@@ -25,45 +34,24 @@ class SongDbApp extends StatelessWidget {
       title: 'SongDB',
       theme: Mh.theme(Brightness.light),
       darkTheme: Mh.theme(Brightness.dark),
-      themeMode: ThemeMode.system,
+      themeMode: _themeMode,
       onGenerateRoute: (settings) {
         switch (settings.name) {
-          case '/':
-            return MaterialPageRoute(builder: (_) => MyHomePage(api: api));
           case '/add_song':
             return MaterialPageRoute(
-              builder: (_) => AddSongPage(
-                api: api,
-                onSaved: (_) {},
-              ),
+              builder: (_) => AddSongPage(api: widget.api, onSaved: (_) {}),
             );
           case '/settings':
-            return MaterialPageRoute(builder: (_) => const _SettingsRoute());
-          default:
             return MaterialPageRoute(
-              builder: (_) => MyHomePage(api: api),
-            );
+              builder: (_) => SettingsPage(
+                themeMode: _themeMode,
+                onThemeChanged: _setThemeMode,
+              ),
+          );
+          default:
+            return MaterialPageRoute(builder: (_) => MyHomePage(api: widget.api));
         }
       },
-    );
-  }
-}
-
-class _SettingsRoute extends StatefulWidget {
-  const _SettingsRoute();
-
-  @override
-  State<_SettingsRoute> createState() => _SettingsRouteState();
-}
-
-class _SettingsRouteState extends State<_SettingsRoute> {
-  ThemeMode _mode = ThemeMode.system;
-
-  @override
-  Widget build(BuildContext context) {
-    return SettingsPage(
-      themeMode: _mode,
-      onThemeChanged: (mode) => setState(() => _mode = mode),
     );
   }
 }

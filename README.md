@@ -1,52 +1,64 @@
-# JEMO CORE - SongDB Mobile
+# SongDB Mobile
 
-A high-impact, tactical mobile interface for the SongDB ecosystem, built on the **JEMO CORE** design language.
+A lyrics-first mobile client for the SongDB API, built with Flutter on the
+MHID (Material Human Interface Design) system: M3 Expressive components under
+HIG restraint. This app reads and writes song lyrics. There is no audio
+playback and there never will be.
 
-## 2. Core Philosophy: "The Tactical Monolith"
-Jemo Core is defined by three pillars:
-* **Binary Contrast**: We communicate in absolutes. If it's not Black (#000000), it's White (#FFFFFF). Gray is a utility, not a personality.
-* **Hard Containment**: Every element lives in a defined space. We do not use whitespace alone to separate content; we use thick, deliberate borders to "crate" information.
-* **Softened Industrial**: While our contrast is harsh, our geometry is approachable. We use consistent rounded corners to prevent the interface from feeling too aggressive or sharp.
+## Features
 
-## Visual Specifications
-### The "Onyx" Palette
-* **True Black**: #000000. Used for Navbars, Sidebars, Modals, and Primary Buttons.
-* **Stark White**: #FFFFFF. Used for text on black backgrounds and the defining 2px-3px borders.
+- Browse songs from the SongDB API (`GET /api/songs`), with search
+- Read a song's lyrics, fetched live per song (`GET /api/songs/{id}`)
+- Add new songs to the database (`POST /api/songs`)
+- Copy lyrics to the clipboard
+- System / light / dark theme
+- Material You adaptive launcher icon with themed (monochrome) support
 
-### Typography: "Loud & Clear"
-* **Headers & Labels**: All structural text (Nav items, Button labels, Modal headers) is UPPERCASE and BOLD.
-* **Body Copy**: Sentence case is reserved strictly for user feedback and descriptions.
+## Design
+
+MHID design language, tokenized in `lib/theme/mhts.dart`:
+
+- Tonal surfaces, no decorative borders (the old JEMO CORE "crate" look is gone)
+- One restrained teal seed color; expressive color only on primary actions
+- Inverted emphasis hierarchy: one high-emphasis action per screen
+- M3 Expressive motion at short durations; honors Reduce Motion
+
+Strategic context: `PRODUCT.md`. Visual system: `DESIGN.md`.
+Icon source: `design/icon.svg` (foreground + monochrome variants).
 
 ## Getting Started
 
-### Prerequisites
-- Flutter SDK
-- Android Studio / VS Code with Flutter extension
+Prerequisites: Flutter SDK.
 
-### Installation
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   flutter pub get
-   ```
-3. Create a `.env` file based on `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
-4. Run the application:
-   ```bash
-   flutter run
-   ```
+```bash
+flutter pub get
+cp .env.example .env   # then fill in your API key
+flutter run
+```
 
 ## Environment Variables
-The application requires the following environment variables in a `.env` file:
-- `BASE_URL`: The URL of the SongDB API.
-- `API_KEY`: Your authentication key for the API.
 
-## Design Implementation
-The JEMO CORE design is implemented in `lib/theme/jemo_core.dart`. 
-Key features:
-- Border Radius: 10px
-- Border Width: 2.5px
-- High-contrast inversion for active states.
+`.env` (gitignored) requires:
+
+- `BASE_URL`: the SongDB API base URL
+- `API_KEY`: your bearer auth key
+
+CI uses `.env.example` as a placeholder so asset bundling succeeds.
+
+## Architecture
+
+```
+lib/
+  api/songdb.dart      # SongDbApi client (list / get by id / create)
+  models/song.dart     # Song model, artist parsing from "Title - Artist"
+  theme/mhts.dart      # MHID token system -> ThemeData
+  page/homepage.dart   # search + song list
+  page/lyrics_page.dart# lyrics view (fetch by id, copy, skeleton)
+  page/add_song.dart   # create song form
+  page/settings.dart   # theme selection
+```
+
+## CI
+
+`.github/workflows/android.yml` builds a release APK on every push to main
+and uploads it as the `songdb-apk` artifact.
